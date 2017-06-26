@@ -46,17 +46,18 @@ public class UserController {
 	}
 
 	@PostMapping("/")
-	public ResponseEntity<Void> save(@RequestBody User user, UriComponentsBuilder uriComponentsBuilder) {
+	public ResponseEntity<User> save(@RequestBody User user, UriComponentsBuilder uriComponentsBuilder) {
 
+		System.out.println("Save User: "+user);
 		if (userService.isUserExist(user)) {
 			System.out.println("User is already exist");
-			return new ResponseEntity<Void>(HttpStatus.CONFLICT);
+			return new ResponseEntity<User>(HttpStatus.CONFLICT);
 		}
 
-		userService.saveUser(user);
+		User savedUser = userService.saveOrUpdateUser(user);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(uriComponentsBuilder.path("/user/{id}").buildAndExpand(user.getId()).toUri());
-		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+		return new ResponseEntity<User>(savedUser, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
@@ -69,31 +70,30 @@ public class UserController {
 			return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
 		}
 
-		updateUser.setUserName(user.getUserName());
+		updateUser.setUsername(user.getUsername());
 		updateUser.setAddress(user.getAddress());
 		updateUser.setEmail(user.getEmail());
 
-		userService.updateUser(updateUser);
-		return new ResponseEntity<User>(updateUser, HttpStatus.OK);
+		User updatedUser = userService.saveOrUpdateUser(updateUser);
+		return new ResponseEntity<User>(updatedUser, HttpStatus.OK);
 	}
-	
-	
+
 	@DeleteMapping("/{id}")
-	public ResponseEntity<User> delete(@PathVariable("id") long id){
-		
+	public ResponseEntity<User> delete(@PathVariable("id") long id) {
+
 		User deleteUser = userService.findById(id);
-		
-		if(deleteUser == null){
-			System.out.println("User with id "+id+" not found in the list");
+
+		if (deleteUser == null) {
+			System.out.println("User with id " + id + " not found in the list");
 			return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
 		}
-		
+
 		userService.deleteUserById(id);
-		return new ResponseEntity<User>(deleteUser, HttpStatus.OK);
+		return new ResponseEntity<User>(HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/")
-	public ResponseEntity<Void> deleteAll(){
+	public ResponseEntity<Void> deleteAll() {
 		userService.deleteAllUsers();
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}

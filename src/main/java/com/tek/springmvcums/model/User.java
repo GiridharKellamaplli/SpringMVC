@@ -1,19 +1,38 @@
 package com.tek.springmvcums.model;
 
-public class User {
-	
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "users")
+public class User implements Serializable{
+
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String userName;
+
+	@Column(name = "username")
+	private String username;
+
+	@Column(name = "address")
 	private String address;
+
+	@Column(name = "email")
 	private String email;
-	
+
 	public User() {
-		
+
 	}
 
-	public User(Long id,String userName, String address, String email) {
-		this.id=id;
-		this.userName = userName;
+	public User(String userName, String address, String email) {
+		this.username = userName;
 		this.address = address;
 		this.email = email;
 	}
@@ -26,12 +45,12 @@ public class User {
 		this.id = id;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getAddress() {
@@ -52,9 +71,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", userName=" + userName + ", address=" + address + ", email=" + email + "]";
+		return "User [id=" + id + ", userName=" + username + ", address=" + address + ", email=" + email + "]";
 	}
-	
-	
 
 }

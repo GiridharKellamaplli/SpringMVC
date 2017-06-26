@@ -1,86 +1,54 @@
 package com.tek.springmvcums.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tek.springmvcums.dao.UserRepository;
 import com.tek.springmvcums.model.User;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-	private static final AtomicLong counter = new AtomicLong();
-
-	private static List<User> users;
-
-	static {
-		users = populateDummyUsers();
-	}
+	@Autowired
+	private UserRepository userRepo;
 
 	@Override
 	public User findById(long id) {
-		for (User user : users) {
-			if (user.getId() == id) {
-				return user;
-			}
-		}
-		return null;
+		return userRepo.findOne(id);
 	}
 
 	@Override
 	public User findByName(String name) {
-		for (User user : users) {
-			if (user.getUserName().equalsIgnoreCase(name)) {
-				return user;
-			}
-		}
-		return null;
+		return userRepo.findByUsername(name);
 	}
 
 	@Override
-	public void saveUser(User user) {
-		user.setId(counter.incrementAndGet());
-		users.add(user);
-	}
-
-	@Override
-	public void updateUser(User user) {
-		users.add(users.indexOf(user), user);
+	public User saveOrUpdateUser(User user) {
+		return userRepo.save(user);
 	}
 
 	@Override
 	public void deleteUserById(long id) {
-		for (User user : users) {
-			if (user.getId() == id) {
-				users.remove(user);
-			}
-		}
+		userRepo.delete(id);
 
 	}
 
 	@Override
 	public List<User> findAllUsers() {
-		return users;
+		return userRepo.findAll();
 	}
 
 	@Override
 	public void deleteAllUsers() {
-		users.clear();
+		userRepo.deleteAll();
 	}
 
 	@Override
 	public boolean isUserExist(User user) {
-
-		return findByName(user.getUserName()) != null;
+		return findByName(user.getUsername()) != null;
+		 
 	}
 
-	private static List<User> populateDummyUsers() {
-		List<User> users = new ArrayList<User>();
-		users.add(new User(counter.incrementAndGet(), "Sam", "NY", "sam@abc.com"));
-		users.add(new User(counter.incrementAndGet(), "Tomy", "ALBAMA", "tomy@abc.com"));
-		users.add(new User(counter.incrementAndGet(), "Kelly", "NEBRASKA", "kelly@abc.com"));
-		return users;
-	}
 }
